@@ -37,7 +37,7 @@ public class Event_FadeInOut : Game_Event
 
                 fadecolor.a = Mathf.Lerp(start, end, time);
                 //Debug.Log(fadecolor.a);
-
+                
                 FadeImg.color = fadecolor;
                 yield return null;
             }

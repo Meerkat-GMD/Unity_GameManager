@@ -1,10 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Playables;
 
 public class Event_GameDataInit : Game_Event
 {
     public GameData GD;
+    public PlayableDirector Timeline;
 
     public override IEnumerator Event_Init()
     {
@@ -13,7 +15,10 @@ public class Event_GameDataInit : Game_Event
 
     protected override IEnumerator Event_Content()
     {
-        GD.init();
+        Timeline.enabled = true;
+        Timeline.Stop();
+        Timeline.Evaluate();
+        Timeline.enabled = false;
         yield return StartCoroutine(Event_Tieup());
     }
 
