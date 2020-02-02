@@ -12,6 +12,7 @@ using UnityEditor;
 public class EventManager : MonoBehaviour
 {
     private int order = 0;
+    public bool readOnly = false;
     public List<Game_Event> Event_Index = new List<Game_Event>();
     public IEnumerator Execute_Event()
     {
@@ -48,30 +49,33 @@ public class EventManagerEditor : Editor
     {
         serializedObject.Update();
 
-        
         var list = serializedObject.FindProperty("Event_Index");
-    
+        var readOnly = serializedObject.FindProperty("readOnly");
         if (GUILayout.Button("Auto"))
         {
             int child = myEventManager.transform.childCount;
-            //myEventManager.Event_Index.Clear();
             list.arraySize = 0;
             for (int i = 0; i < child; i++)
             {
                 Game_Event gameEvent = myEventManager.transform.GetChild(i).GetComponent<Game_Event>();
-                //myEventManager.Event_Index.Add(gameEvent);
-                //serializedObject.ApplyModifiedProperties();
                 list.InsertArrayElementAtIndex(i);
                 list.GetArrayElementAtIndex(i).objectReferenceValue = gameEvent;
             }
         }
-        //list = myEventManager;
-        //base.OnInspectorGUI();
 
-        //var myScript = target as Event_WaitforSatisfaction;
+        readOnly.boolValue = GUILayout.Toggle(readOnly.boolValue, "READ ONLY");
 
-        //EditorGUILayout.PropertyField(serializedObject.FindProperty("Event_Index"));
-        EditorGUILayout.PropertyField(list, true);
+        if (readOnly.boolValue)
+        {
+            EditorGUI.BeginDisabledGroup(true);
+            EditorGUILayout.PropertyField(list, true);
+            EditorGUI.EndDisabledGroup();
+
+        }
+        else
+        {
+            EditorGUILayout.PropertyField(list, true);
+        }
 
         serializedObject.ApplyModifiedProperties();
     }

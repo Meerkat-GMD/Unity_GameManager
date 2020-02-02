@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
 {
     private int order = 0;
     private string nextScene="";
+    public bool readOnly = false;
     public List<EventManager> ScenePart_Index= new List<EventManager>();
 
     private void Start()
@@ -62,25 +63,35 @@ public class GameManagerEditor : Editor
     {
         serializedObject.Update();
 
-        var myScript = target as Event_WaitforSatisfaction;
         var list = serializedObject.FindProperty("ScenePart_Index");
+        var readOnly = serializedObject.FindProperty("readOnly");
 
         if (GUILayout.Button("Auto"))
         {
             int child = myGameManager.transform.childCount;
-
-            //myGameManager.ScenePart_Index.Clear();
             list.arraySize = 0;
             for (int i = 0; i < child; i++)
             {
                 EventManager gamePart = myGameManager.transform.GetChild(i).GetComponent<EventManager>();
-                //myGameManager.ScenePart_Index.Add(gamePart);
                 list.InsertArrayElementAtIndex(i);
                 list.GetArrayElementAtIndex(i).objectReferenceValue = gamePart;
             }
             
         }
-        EditorGUILayout.PropertyField(list, new GUIContent("Part"),true);
+
+        readOnly.boolValue = GUILayout.Toggle(readOnly.boolValue, "READ ONLY");
+
+        if (readOnly.boolValue)
+        {
+            EditorGUI.BeginDisabledGroup(true);
+            EditorGUILayout.PropertyField(list, new GUIContent("Part"), true);
+            EditorGUI.EndDisabledGroup();
+
+        }
+        else
+        {
+            EditorGUILayout.PropertyField(list, new GUIContent("Part"), true);
+        }
 
         serializedObject.ApplyModifiedProperties();
     }
